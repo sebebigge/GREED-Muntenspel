@@ -11,21 +11,21 @@ import random
 ################################  IMPLEMENTATION  ##################################
 ####################################################################################
 
-def greedy_aux(A: list) -> int:
-    if A[0] > A[-1]:
-        return A.pop(0)
-    return A.pop()
-
-
 """
 Both players use a greedy approach to maximize their gain
 """
 def greedy(A: list) -> int:
+    lo, hi = 0, len(A) - 1
     player1 = 0
-    while len(A) > 0:
-        player1 += greedy_aux(A)
-        if A:
-            greedy_aux(A)
+    first = True
+    while lo <= hi:
+        if A[lo] > A[hi]:
+            v = A[lo]; lo += 1
+        else:
+            v = A[hi]; hi -= 1
+        if first:
+            player1 += v
+        first = not first
     return player1
 
 
@@ -119,4 +119,3 @@ print(f"Greedy: {greedy(sample.copy())}")
 ####################################################################################
 ####################################  TESTS  #######################################
 ####################################################################################
-
