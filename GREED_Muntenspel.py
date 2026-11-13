@@ -32,14 +32,14 @@ def dynamic_programming(A: list) -> tuple[int, int]:
     player2 = 0
     n = len(A)
     gain = dict()
-    for i in range(2, n):
-        for j in range(0, n - i):
-            # remainder is zero -> player 1's turn
-            if i % 2 == 0:
-                gain[(j, j + i)] = max(gain[(j, j + i - 1)] + A[j + i - 1], 
-                                   gain[(j + 1, j + i)] + A[j])
+    for l in range(2, n + 1):
+        for k in range(0, n - l + 1):
+            if l == 2:
+                gain[(k, k + l)] = max(A[k], A[k + 1])
             else:
-                pass
+                gain[(k, k + l)] = max(A[k] - gain[(k + 1, k + l)] + sum(A[k + 1: k + l]), 
+                                       A[k + l - 1] - gain[(k, k + l - 1)] + sum(A[k: k + l - 1]))
+    return gain
 
 
 """
@@ -67,7 +67,7 @@ def brute_force_greedy(A: list, i: int, j: int) -> int:
 n = 6
 sample = random.sample(range(1,n+1), n)
 print(sample)
-print(brute_force_greedy(sample, 1, n))
+print(dynamic_programming(sample))
 
 ####################################################################################
 ####################################  HELPERS  #####################################
