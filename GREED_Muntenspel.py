@@ -20,20 +20,19 @@ def greedy_aux(A: list) -> int:
 """
 Both players use a greedy approach to maximize their gain
 """
-def greedy(A: list) -> tuple[int, int]:
+def greedy(A: list) -> int:
     player1 = 0
-    player2 = 0
     while len(A) > 0:
         player1 += greedy_aux(A)
         if A:
-            player2 += greedy_aux(A)
-    return player1, player2
+            greedy_aux(A)
+    return player1
 
 
 """
 Both players use dynamic programming (bottom-up) to maximize their gain
 """
-def dynamic_programming(A: list) -> dict[tuple[int, int], int]:
+def dynamic_programming(A: list) -> int:
     n = len(A); gain = {}
     partial_sum = [0] * (n + 1)
     for i, a in enumerate(A):
@@ -46,13 +45,13 @@ def dynamic_programming(A: list) -> dict[tuple[int, int], int]:
             else:
                 total = partial_sum[j] - partial_sum[k - 1]
                 gain[(k, j)] = total - min(gain[(k + 1, j)], gain[(k, j - 1)])
-    return gain
+    return gain[(1,n)]
 
 
 """
-One player uses a dynamic programming approach (bottom-up) while the other applies a greedy approach
+The first player uses a dynamic programming approach (bottom-up) while the second applies a greedy approach
 """
-def dynamic_greedy(A: list) -> dict[tuple[int, int], int]:
+def dp_first_vs_greedy(A: list) -> int:
     n = len(A); gain = {}
     for l in range(2, n + 1):
         for k in range(1, n - l + 2):
@@ -65,7 +64,16 @@ def dynamic_greedy(A: list) -> dict[tuple[int, int], int]:
                 (k1, j1) = (k + 2, j) if A[k] > A[j - 1] else (k + 1, j - 1)
                 (k2, j2) = (k + 1, j - 1) if A[k - 1] > A[j - 2] else (k, j - 2)
                 gain[(k, j)] = max(A[k - 1] + gain[(k1, j1)], A[j - 1] + gain[(k2, j2)])
-    return gain
+    return gain[(1,n)]
+
+
+"""
+The first player uses a greedy approach while the second applies a dynamic programming (bottom-up) approach
+"""
+def greedy_first_vs_dp(A: list) -> int:
+    n = len(A)
+    dp_gain = dp_first_vs_greedy(A[1:] if A[0] > A[-1] else A[:-1])[(1, len(A) - 1)] 
+    return sum(A) - dp_gain
 
 
 """
@@ -90,12 +98,14 @@ def brute_force_greedy(A: list, i: int, j: int) -> int:
     return max(A[i] + brute_force_greedy(A, i1 + 1, j1 + 1),
                A[j] + brute_force_greedy(A, i2 + 1, j2 + 1))
 
-n = 200
+n = 20
 sample = random.sample(range(1,n+1), n)
 #print(sample)
 print(f"Dynamic programming: {dynamic_programming(sample)[(1, n)]}")
-print(f"Dynamic greedy: {dynamic_greedy(sample)[(1, n)]}")
-print(f"Greedy: {greedy(sample)[0]}")
+print(f"DP first vs greedy: {dp_first_vs_greedy(sample)[(1, n)]}")
+print(dp_first_vs_greedy(sample))
+print(f"Greedy first vs DP: {greedy_first_vs_dp(sample)[(1, n)]}")
+print(f"Greedy: {greedy(sample.copy())}")
 
 ####################################################################################
 ####################################  HELPERS  #####################################
