@@ -17,6 +17,9 @@ def greedy_aux(A: list) -> int:
     return A.pop()
 
 
+"""
+Both players use a greedy approach to maximize their gain
+"""
 def greedy(A: list) -> tuple[int, int]:
     player1 = 0
     player2 = 0
@@ -27,6 +30,9 @@ def greedy(A: list) -> tuple[int, int]:
     return player1, player2
 
 
+"""
+Both players use dynamic programming (bottom-up) to maximize their gain
+"""
 def dynamic_programming(A: list) -> dict[tuple[int, int], int]:
     n = len(A); gain = {}
     partial_sum = [0] * (n + 1)
@@ -44,7 +50,26 @@ def dynamic_programming(A: list) -> dict[tuple[int, int], int]:
 
 
 """
-Player 1: brute force
+One player uses a dynamic programming approach (bottom-up) while the other applies a greedy approach
+"""
+def dynamic_greedy(A: list) -> dict[tuple[int, int], int]:
+    n = len(A); gain = {}
+    for l in range(2, n + 1):
+        for k in range(n - l + 1):
+            j = k + l
+            if l == 2:
+                gain[(k, j)] = max(A[k], A[k + 1])
+            elif l == 3:
+                gain[(k, j)] = max(A[k] + min(A[k + 1:j]), A[j - 1] + min(A[k:j - 1]))
+            else:
+                (k1, j1) = (k + 2, j) if A[k + 1] > A[j - 1] else (k + 1, j - 1)
+                (k2, j2) = (k + 1, j - 1) if A[k] > A[j - 2] else (k, j - 2)
+                gain[(k, j)] = max(A[k] + gain[(k1, j1)], A[j - 1] + gain[(k2, j2)])
+    return gain
+
+
+"""
+Player 1: brute force (instead of dynamic programming)
 Player 2: greedy 
 """
 def brute_force_greedy(A: list, i: int, j: int) -> int:
@@ -68,7 +93,7 @@ def brute_force_greedy(A: list, i: int, j: int) -> int:
 n = 6
 sample = random.sample(range(1,n+1), n)
 print(sample)
-print(dynamic_programming(sample))
+print(dynamic_greedy(sample))
 
 ####################################################################################
 ####################################  HELPERS  #####################################
