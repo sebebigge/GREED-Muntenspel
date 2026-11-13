@@ -39,12 +39,12 @@ def dynamic_programming(A: list) -> dict[tuple[int, int], int]:
     for i, a in enumerate(A):
         partial_sum[i + 1] = partial_sum[i] + a
     for l in range(2, n + 1):
-        for k in range(n - l + 1):
-            j = k + l
+        for k in range(1, n - l + 2):
+            j = k + l - 1
             if l == 2:
-                gain[(k, j)] = max(A[k], A[k + 1])
+                gain[(k, j)] = max(A[k - 1], A[k])
             else:
-                total = partial_sum[j] - partial_sum[k]
+                total = partial_sum[j] - partial_sum[k - 1]
                 gain[(k, j)] = total - min(gain[(k + 1, j)], gain[(k, j - 1)])
     return gain
 
@@ -55,16 +55,16 @@ One player uses a dynamic programming approach (bottom-up) while the other appli
 def dynamic_greedy(A: list) -> dict[tuple[int, int], int]:
     n = len(A); gain = {}
     for l in range(2, n + 1):
-        for k in range(n - l + 1):
-            j = k + l
+        for k in range(1, n - l + 2):
+            j = k + l - 1
             if l == 2:
-                gain[(k, j)] = max(A[k], A[k + 1])
+                gain[(k, j)] = max(A[k - 1], A[k])
             elif l == 3:
-                gain[(k, j)] = max(A[k] + min(A[k + 1:j]), A[j - 1] + min(A[k:j - 1]))
+                gain[(k, j)] = max(A[k - 1] + min(A[k:j]), A[j - 1] + min(A[k - 1:j - 1]))
             else:
-                (k1, j1) = (k + 2, j) if A[k + 1] > A[j - 1] else (k + 1, j - 1)
-                (k2, j2) = (k + 1, j - 1) if A[k] > A[j - 2] else (k, j - 2)
-                gain[(k, j)] = max(A[k] + gain[(k1, j1)], A[j - 1] + gain[(k2, j2)])
+                (k1, j1) = (k + 2, j) if A[k] > A[j - 1] else (k + 1, j - 1)
+                (k2, j2) = (k + 1, j - 1) if A[k - 1] > A[j - 2] else (k, j - 2)
+                gain[(k, j)] = max(A[k - 1] + gain[(k1, j1)], A[j - 1] + gain[(k2, j2)])
     return gain
 
 
@@ -90,10 +90,12 @@ def brute_force_greedy(A: list, i: int, j: int) -> int:
     return max(A[i] + brute_force_greedy(A, i1 + 1, j1 + 1),
                A[j] + brute_force_greedy(A, i2 + 1, j2 + 1))
 
-n = 6
+n = 200
 sample = random.sample(range(1,n+1), n)
-print(sample)
-print(dynamic_greedy(sample))
+#print(sample)
+print(f"Dynamic programming: {dynamic_programming(sample)[(1, n)]}")
+print(f"Dynamic greedy: {dynamic_greedy(sample)[(1, n)]}")
+print(f"Greedy: {greedy(sample)[0]}")
 
 ####################################################################################
 ####################################  HELPERS  #####################################
@@ -110,3 +112,4 @@ print(dynamic_greedy(sample))
 ####################################################################################
 ####################################  TESTS  #######################################
 ####################################################################################
+
