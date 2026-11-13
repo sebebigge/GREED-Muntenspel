@@ -71,9 +71,7 @@ def dp_first_vs_greedy(A: list) -> int:
 The first player uses a greedy approach while the second applies a dynamic programming (bottom-up) approach
 """
 def greedy_first_vs_dp(A: list) -> int:
-    n = len(A)
-    dp_gain = dp_first_vs_greedy(A[1:] if A[0] > A[-1] else A[:-1])[(1, len(A) - 1)] 
-    return sum(A) - dp_gain
+    return sum(A) - dp_first_vs_greedy(A[1:] if A[0] > A[-1] else A[:-1])
 
 
 """
@@ -98,13 +96,12 @@ def brute_force_greedy(A: list, i: int, j: int) -> int:
     return max(A[i] + brute_force_greedy(A, i1 + 1, j1 + 1),
                A[j] + brute_force_greedy(A, i2 + 1, j2 + 1))
 
-n = 20
+n = 200
 sample = random.sample(range(1,n+1), n)
 #print(sample)
-print(f"Dynamic programming: {dynamic_programming(sample)[(1, n)]}")
-print(f"DP first vs greedy: {dp_first_vs_greedy(sample)[(1, n)]}")
-print(dp_first_vs_greedy(sample))
-print(f"Greedy first vs DP: {greedy_first_vs_dp(sample)[(1, n)]}")
+print(f"Dynamic programming: {dynamic_programming(sample)}")
+print(f"DP first vs greedy: {dp_first_vs_greedy(sample)}")
+print(f"Greedy first vs DP: {greedy_first_vs_dp(sample)}")
 print(f"Greedy: {greedy(sample.copy())}")
 
 ####################################################################################
